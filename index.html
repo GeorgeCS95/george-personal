@@ -1,0 +1,397 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Github, 
+  Linkedin, 
+  Mail, 
+  ExternalLink, 
+  Terminal, 
+  Code2, 
+  Briefcase, 
+  User, 
+  Menu, 
+  X,
+  ChevronDown,
+  MonitorSmartphone,
+  Server
+} from 'lucide-react';
+
+// --- MOCK DATA ---
+const PERSONAL_INFO = {
+  name: "George",
+  role: "Aspiring Software Developer",
+  tagline: "Documenting my journey into the world of web development and software engineering.",
+  bio: "Hi, I'm George! I've recently embarked on an exciting journey to teach myself software development. I'm passionate about learning how things work under the hood and building things from scratch. Right now, I'm focusing on mastering the fundamentals of web development and building small projects to apply what I learn. I'm always open to feedback, mentorship, and connecting with others in the tech community!",
+  email: "george@example.com",
+  github: "https://github.com",
+  linkedin: "https://linkedin.com"
+};
+
+const SKILLS = [
+  { category: "Frontend Basics", items: ["HTML5", "CSS3", "JavaScript", "React (Learning)"], icon: <MonitorSmartphone className="w-5 h-5" /> },
+  { category: "Backend Basics", items: ["Node.js (Intro)", "Python (Basics)"], icon: <Server className="w-5 h-5" /> },
+  { category: "Tools & Learning", items: ["Git", "GitHub", "VS Code", "Command Line"], icon: <Terminal className="w-5 h-5" /> }
+];
+
+const PROJECTS = [
+  {
+    id: 1,
+    title: "My First Portfolio",
+    description: "A simple, responsive portfolio built from scratch to practice semantic HTML and CSS Flexbox/Grid layouts.",
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800&h=500",
+    tags: ["HTML", "CSS", "Responsive Design"],
+    link: "#"
+  },
+  {
+    id: 2,
+    title: "Interactive Calculator",
+    description: "A functional calculator app built to understand DOM manipulation, event listeners, and core JavaScript logic.",
+    image: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?auto=format&fit=crop&q=80&w=800&h=500",
+    tags: ["JavaScript", "HTML", "CSS"],
+    link: "#"
+  },
+  {
+    id: 3,
+    title: "Weather Dashboard (WIP)",
+    description: "Currently building a weather application to learn how to fetch and display data asynchronously from third-party REST APIs.",
+    image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?auto=format&fit=crop&q=80&w=800&h=500",
+    tags: ["React", "API", "Async JS"],
+    link: "#"
+  }
+];
+
+// --- COMPONENTS ---
+
+const Navbar = ({ isScrolled }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const navLinks = [
+    { name: 'About', href: '#about' },
+    { name: 'Skills', href: '#skills' },
+    { name: 'Projects', href: '#projects' },
+    { name: 'Contact', href: '#contact' },
+  ];
+
+  return (
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-slate-900/90 backdrop-blur-md shadow-lg py-4' : 'bg-transparent py-6'}`}>
+      <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
+        <a href="#" className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+          {PERSONAL_INFO.name.split(' ')[0]}<span className="text-slate-100">.dev</span>
+        </a>
+
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center space-x-8">
+          {navLinks.map((link) => (
+            <a key={link.name} href={link.href} className="text-slate-300 hover:text-emerald-400 transition-colors text-sm font-medium">
+              {link.name}
+            </a>
+          ))}
+          <a href="#contact" className="px-5 py-2 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
+            Let's Connect
+          </a>
+        </div>
+
+        {/* Mobile Toggle */}
+        <button className="md:hidden text-slate-300 focus:outline-none" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Nav */}
+      {isOpen && (
+        <div className="md:hidden absolute top-full left-0 w-full bg-slate-800 shadow-xl border-t border-slate-700">
+          <div className="flex flex-col px-6 py-4 space-y-4">
+            {navLinks.map((link) => (
+              <a 
+                key={link.name} 
+                href={link.href} 
+                className="text-slate-300 hover:text-emerald-400 transition-colors text-lg"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+};
+
+export default function App() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [formStatus, setFormStatus] = useState(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    setFormStatus('sending');
+    // Simulate API call
+    setTimeout(() => {
+      setFormStatus('success');
+      e.target.reset();
+      setTimeout(() => setFormStatus(null), 3000);
+    }, 1500);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
+      <Navbar isScrolled={isScrolled} />
+
+      <main>
+        {/* HERO SECTION */}
+        <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="max-w-6xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center relative z-10">
+            <div className="space-y-6 order-2 md:order-1">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-xs font-medium text-slate-300">Currently learning & building</span>
+              </div>
+              
+              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight">
+                Hi, I'm <br />
+                <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+                  {PERSONAL_INFO.name.split(' ')[0]}
+                </span>
+              </h1>
+              
+              <h2 className="text-xl md:text-2xl text-slate-400 font-light">
+                {PERSONAL_INFO.role}
+              </h2>
+              
+              <p className="text-lg text-slate-400 max-w-lg leading-relaxed">
+                {PERSONAL_INFO.tagline}
+              </p>
+              
+              <div className="flex flex-wrap items-center gap-4 pt-4">
+                <a href="#projects" className="px-6 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-semibold transition-all shadow-lg shadow-emerald-500/20 flex items-center space-x-2">
+                  <Briefcase className="w-5 h-5" />
+                  <span>View My Work</span>
+                </a>
+                <a href="#contact" className="px-6 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium transition-all flex items-center space-x-2">
+                  <Mail className="w-5 h-5" />
+                  <span>Contact Me</span>
+                </a>
+              </div>
+              
+              <div className="flex items-center space-x-5 pt-8 text-slate-400">
+                <a href={PERSONAL_INFO.github} target="_blank" rel="noreferrer" className="hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-full">
+                  <Github className="w-6 h-6" />
+                </a>
+                <a href={PERSONAL_INFO.linkedin} target="_blank" rel="noreferrer" className="hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-full">
+                  <Linkedin className="w-6 h-6" />
+                </a>
+              </div>
+            </div>
+            
+            <div className="order-1 md:order-2 flex justify-center md:justify-end">
+              <div className="relative w-64 h-64 md:w-96 md:h-96">
+                {/* Image Placeholder with fancy border */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 animate-spin-slow" style={{ animationDuration: '8s' }}></div>
+                <div className="absolute inset-1 rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                   <img 
+                    src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=800&h=800" 
+                    alt="Profile" 
+                    className="w-full h-full object-cover opacity-80 mix-blend-luminosity hover:mix-blend-normal transition-all duration-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+            <a href="#about" className="text-slate-500 hover:text-emerald-400 transition-colors">
+              <ChevronDown className="w-8 h-8" />
+            </a>
+          </div>
+        </section>
+
+        {/* ABOUT & SKILLS SECTION */}
+        <section id="about" className="py-24 bg-slate-800/50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex items-center space-x-2 mb-12">
+              <User className="w-8 h-8 text-emerald-400" />
+              <h2 className="text-3xl font-bold text-white">About Me</h2>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-16">
+              <div className="space-y-6">
+                <p className="text-lg text-slate-300 leading-relaxed">
+                  {PERSONAL_INFO.bio}
+                </p>
+                <p className="text-lg text-slate-300 leading-relaxed">
+                  I believe in writing clean, maintainable code and building inclusive, accessible digital products that make a positive impact.
+                </p>
+              </div>
+              
+              <div className="space-y-8" id="skills">
+                {SKILLS.map((skillGroup) => (
+                  <div key={skillGroup.category} className="bg-slate-900 rounded-xl p-6 border border-slate-700/50 hover:border-emerald-500/30 transition-colors">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                        {skillGroup.icon}
+                      </div>
+                      <h3 className="text-xl font-semibold text-white">{skillGroup.category}</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {skillGroup.items.map(skill => (
+                        <span key={skill} className="px-3 py-1 bg-slate-800 text-slate-300 rounded-md text-sm border border-slate-700">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* PROJECTS SECTION */}
+        <section id="projects" className="py-24">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex items-center justify-between mb-12">
+              <div className="flex items-center space-x-2">
+                <Code2 className="w-8 h-8 text-emerald-400" />
+                <h2 className="text-3xl font-bold text-white">Featured Projects</h2>
+              </div>
+              <a href={PERSONAL_INFO.github} target="_blank" rel="noreferrer" className="hidden sm:flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 transition-colors">
+                <span>View all on GitHub</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {PROJECTS.map((project) => (
+                <div key={project.id} className="group rounded-2xl bg-slate-800/50 border border-slate-700/50 overflow-hidden hover:-translate-y-2 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10">
+                  <div className="relative h-48 overflow-hidden">
+                    <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors z-10"></div>
+                    <img 
+                      src={project.image} 
+                      alt={project.title} 
+                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
+                    <p className="text-slate-400 mb-6 text-sm leading-relaxed line-clamp-3">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {project.tags.map(tag => (
+                        <span key={tag} className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <a href={project.link} className="flex items-center space-x-2 text-sm font-medium text-white hover:text-emerald-400 transition-colors">
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Live Demo</span>
+                      </a>
+                      <a href={PERSONAL_INFO.github} className="flex items-center space-x-2 text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                        <Github className="w-4 h-4" />
+                        <span>Source</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-10 sm:hidden flex justify-center">
+               <a href={PERSONAL_INFO.github} target="_blank" rel="noreferrer" className="flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 transition-colors px-6 py-3 rounded-lg border border-emerald-500/30 w-full justify-center">
+                <span>View all on GitHub</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* CONTACT SECTION */}
+        <section id="contact" className="py-24 bg-slate-800/50">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h2 className="text-4xl font-bold text-white mb-6">Let's Connect</h2>
+            <p className="text-lg text-slate-400 mb-12 max-w-2xl mx-auto">
+              I'm always eager to connect with other developers, find mentors, or just chat about tech. Feel free to drop a message!
+            </p>
+            
+            <div className="bg-slate-900 rounded-2xl p-8 md:p-12 border border-slate-700/50 text-left">
+              <form onSubmit={handleContactSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium text-slate-300">Name</label>
+                    <input 
+                      type="text" 
+                      id="name"
+                      required
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-white transition-colors"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium text-slate-300">Email</label>
+                    <input 
+                      type="email" 
+                      id="email"
+                      required
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-white transition-colors"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="message" className="text-sm font-medium text-slate-300">Message</label>
+                  <textarea 
+                    id="message"
+                    required
+                    rows={5}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-white transition-colors resize-none"
+                    placeholder="Hello, I'd like to talk about..."
+                  ></textarea>
+                </div>
+                
+                <button 
+                  type="submit" 
+                  disabled={formStatus === 'sending'}
+                  className="w-full py-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold transition-all flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {formStatus === 'sending' ? (
+                    <span className="animate-pulse">Sending Message...</span>
+                  ) : formStatus === 'success' ? (
+                    <span>Message Sent! ✓</span>
+                  ) : (
+                    <>
+                      <Mail className="w-5 h-5" />
+                      <span>Send Message</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="py-8 text-center border-t border-slate-800">
+        <p className="text-slate-500 text-sm">
+          © {new Date().getFullYear()} {PERSONAL_INFO.name}. Built with React & Tailwind CSS.
+        </p>
+      </footer>
+    </div>
+  );
+}
